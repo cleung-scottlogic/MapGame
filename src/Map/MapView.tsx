@@ -1,31 +1,28 @@
-import { useEffect } from "react";
-import Map from "ol/Map.js";
-import View from "ol/View";
-import OSM from "ol/source/OSM";
-import TileLayer from "ol/layer/Tile";
+import { useEffect, useState, type ReactNode } from "react";
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
 import "./MapView.css";
+import LocationMarker from "./LocationMarker";
 
 function MapView() {
-  useEffect(() => {
-    const map = new Map({
-      target: "map",
-      layers: [
-        new TileLayer({
-          source: new OSM(),
-        }),
-      ],
-      view: new View({
-        center: [0, 0],
-        zoom: 2,
-      }),
-    });
-
-    return () => {
-      map.setTarget();
-    };
-  }, []);
-
-  return <div id='map' className='map'></div>;
+  return (
+    // <div id='map'></div>
+    <>
+      <MapContainer center={[51.505, -0.09]} zoom={13}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        />
+        <LocationMarker />
+      </MapContainer>
+    </>
+  );
 }
 
 export default MapView;
