@@ -6,22 +6,27 @@ import L from "leaflet";
 import { DataService, fromGridRef, getStartinglocation } from "./DataService";
 import { zoomLevels } from "./Map/ZoomLevel";
 
+import OsGridRef from "https://cdn.jsdelivr.net/npm/geodesy@2/osgridref.js?url";
+
 function App() {
   const [guesses, setGuesses] = useState(0);
 
   const startingLocale = getStartinglocation();
 
-  const osgbOrigin = fromGridRef(
+  const gridRef = OsGridRef.parse(
     startingLocale.gridSquare +
       startingLocale.easting +
       startingLocale.northing,
   );
+  const wgs84 = gridRef.toLatLon();
+  const lat = wgs84._lat;
+  const lng = wgs84._lon;
 
   const maxZoom = zoomLevels.one.zoom;
   let minZoom = zoomLevels.two.zoom;
   const origin = {
-    lat: 51.505,
-    lng: -0.09,
+    lat: lat,
+    lng: lng,
   };
   const boundFactor = zoomLevels.two.boundsFactor;
 
