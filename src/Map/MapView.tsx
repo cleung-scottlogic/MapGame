@@ -14,6 +14,7 @@ interface MapProps {
   tileLayer: string;
   attribution?: string;
   isMarkerEnabled?: boolean;
+  fixedMarker?: LatLng;
   mapContainerProps: MapContainerProps;
 }
 
@@ -22,7 +23,9 @@ function MapView(props: MapProps) {
     <>
       <MapContainer {...props.mapContainerProps}>
         <TileLayer attribution={props.attribution} url={props.tileLayer} />
-        {props.isMarkerEnabled ? <LocationMarker /> : null}
+        {props.isMarkerEnabled ? (
+          <LocationMarker fixedPosition={props.fixedMarker} />
+        ) : null}
       </MapContainer>
     </>
   );

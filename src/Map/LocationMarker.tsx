@@ -2,7 +2,11 @@ import type { LatLng } from "leaflet";
 import { useState } from "react";
 import { Marker, Popup, useMapEvents } from "react-leaflet";
 
-function LocationMarker() {
+function LocationMarker({ fixedPosition }: { fixedPosition?: LatLng }) {
+  if (fixedPosition) {
+    return <Marker position={fixedPosition}></Marker>;
+  }
+
   const [position, setPosition] = useState<LatLng | null>(null);
   useMapEvents({
     click(e) {
