@@ -16,8 +16,9 @@ function App() {
   const [startingLocale] = useState(getStartinglocation());
 
   const maxZoomLevel = zoomLevels[0];
+  const minZoomLevel = zoomLevels[guesses.length];
 
-  const [minZoomLevel, setMinZoomLevel] = useState<ZoomLevel>(zoomLevels[0]);
+  // const [minZoomLevel, setMinZoomLevel] = useState<ZoomLevel>(zoomLevels[0]);
 
   const origin = {
     lat: startingLocale.lat,
@@ -51,6 +52,10 @@ function App() {
     zoom: 7,
   };
 
+  const isSubmitDisabled = (): boolean => {
+    return !currentGuessLocation || guesses.length === 5;
+  };
+
   return (
     <>
       <section className='header'>
@@ -81,11 +86,11 @@ function App() {
         ></MapView>
         <button
           title='Submit'
-          disabled={!currentGuessLocation}
+          disabled={isSubmitDisabled()}
           onClick={() => {
             if (currentGuessLocation) {
               setGuesses((guesses) => guesses.concat(currentGuessLocation));
-              setMinZoomLevel(() => zoomLevels[guesses.length + 1]);
+              // setMinZoomLevel(() => zoomLevels[guesses.length + 1]);
             }
           }}
         >
