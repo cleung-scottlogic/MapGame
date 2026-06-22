@@ -2,39 +2,35 @@ import { useState } from "react";
 import "./App.css";
 import MapView from "./Map/MapView";
 import type { MapContainerProps } from "react-leaflet";
-import L from "leaflet";
+import L, { type LatLngExpression } from "leaflet";
 import { DataService, fromGridRef, getStartinglocation } from "./DataService";
-import { zoomLevels } from "./Map/ZoomLevel";
+import { zoomLevels, type ZoomLevel } from "./Map/ZoomLevel";
 
-import OsGridRef from "https://cdn.jsdelivr.net/npm/geodesy@2/osgridref.js?url";
+interface Guess {
+  location?: LatLngExpression;
+}
 
 function App() {
-  const [guesses, setGuesses] = useState(0);
+  const [guesses, setGuesses] = useState<LatLngExpression[]>([]);
 
-  const startingLocale = getStartinglocation();
+  const [startingLocale] = useState(getStartinglocation());
 
-  const gridRef = OsGridRef.parse(
-    startingLocale.gridSquare +
-      startingLocale.easting +
-      startingLocale.northing,
-  );
-  const wgs84 = gridRef.toLatLon();
-  const lat = wgs84._lat;
-  const lng = wgs84._lon;
+  const maxZoomLevel = zoomLevels[0];
 
-  const maxZoom = zoomLevels.one.zoom;
-  let minZoom = zoomLevels.two.zoom;
+  const [minZoomLevel, setMinZoomLevel] = useState<ZoomLevel>(zoomLevels[0]);
+
   const origin = {
-    lat: lat,
-    lng: lng,
+    lat: startingLocale.lat,
+    lng: startingLocale.lng,
   };
-  const boundFactor = zoomLevels.two.boundsFactor;
+
+  const boundFactor = minZoomLevel.boundsFactor * 2;
 
   const historicalMapContainerProps: MapContainerProps = {
     center: origin,
-    minZoom,
-    maxZoom,
-    zoom: maxZoom,
+    minZoom: minZoomLevel.zoom,
+    maxZoom: maxZoomLevel.zoom,
+    zoom: minZoomLevel.zoom,
     dragging: true,
     doubleClickZoom: false,
     zoomControl: true,
@@ -44,16 +40,23 @@ function App() {
     ],
   };
 
+  const osmOrigin = {
+    lat: 54.970924,
+    lng: -2.457155,
+  };
+
   const osmMapContainerProps: MapContainerProps = {
-    center: origin,
+    center: osmOrigin,
     zoomControl: true,
-    zoom: 13,
+    zoom: 7,
   };
 
   return (
     <>
-      <section id="center">
+      <a>Guesses remaining = {5 - (guesses.length ?? 0)}</a>
+      <section id='center'>
         <MapView
+          key={guesses.length}
           mapContainerProps={historicalMapContainerProps}
           tileLayer={`${DataService.historicalTileLayer}${DataService.historicalTileLayerKey}`}
           attribution={DataService.historicalAttribution}
@@ -66,6 +69,16 @@ function App() {
           attribution={DataService.osmAttribution}
           isMarkerEnabled={true}
         ></MapView>
+        <button
+          title='Submit'
+          onClick={() => {
+            setGuesses((guesses) => guesses.concat([{ lat: 0.0, lng: 0.0 }]));
+            setMinZoomLevel(() => zoomLevels[guesses.length]);
+          }}
+        >
+          {" "}
+          Submit{" "}
+        </button>
       </section>
     </>
   );

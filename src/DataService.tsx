@@ -1,9 +1,20 @@
+import OsGridRef from "https://cdn.jsdelivr.net/npm/geodesy@2/osgridref.js?url";
+
 interface DataService {
   osmTileLayer: string;
   osmAttribution: string;
   historicalTileLayer: string;
   historicalTileLayerKey: string;
   historicalAttribution: string;
+}
+
+interface StartingLocation {
+  date: Date;
+  gridReference: string;
+  easting: string;
+  northing: string;
+  lat: number;
+  lng: number;
 }
 
 export const DataService: DataService = {
@@ -15,7 +26,7 @@ export const DataService: DataService = {
   historicalAttribution: `<a href="${import.meta.env.VITE_HISTORICAL_ATTRIBUTION}">National Library of Scotland</a>`,
 };
 
-export const getStartinglocation = () => {
+export const getStartinglocation = (): StartingLocation => {
   // prettier-ignore
   const osGridSquares = [
     "HU","HY","ND","NC","NB","NF","NG","NH",
@@ -26,20 +37,29 @@ export const getStartinglocation = () => {
     "NU"
   ]
 
-  const getRandomThreeigitNumber = (): string => {
+  const getRandomThreeDigitNumber = (): string => {
     const value = Math.floor(Math.random() * 999);
 
     return value.toString().padStart(3, "0");
   };
 
-  const gridSquare: string =
+  const gridReference: string =
     osGridSquares[Math.floor(Math.random() * osGridSquares.length)];
+  const easting = getRandomThreeDigitNumber();
+  const northing = getRandomThreeDigitNumber();
+
+  const gridRef = OsGridRef.parse(gridReference + easting + northing);
+  const wgs84 = gridRef.toLatLon();
+  const lat: number = wgs84._lat;
+  const lng: number = wgs84._lon;
 
   return {
     date: new Date(),
-    gridSquare,
-    easting: getRandomThreeigitNumber(),
-    northing: getRandomThreeigitNumber(),
+    gridReference,
+    easting,
+    northing,
+    lat,
+    lng,
   };
 };
 
