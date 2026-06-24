@@ -1,6 +1,6 @@
-import { type LatLng } from 'leaflet';
-import { useState } from 'react';
-import { Marker, useMapEvents } from 'react-leaflet';
+import { type LatLng } from "leaflet";
+import { useState } from "react";
+import { Marker, useMapEvents } from "react-leaflet";
 
 interface LocationMarkerProps {
   existingLocations: LatLng[] | undefined;
@@ -21,7 +21,7 @@ function LocationMarker(props: LocationMarkerProps) {
     return (
       <>
         {props.existingLocations.map((l: LatLng) => (
-          <Marker position={l} />
+          <Marker opacity={0.6} position={l} />
         ))}
       </>
     );

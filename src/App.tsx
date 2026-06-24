@@ -1,17 +1,15 @@
-import { useState } from "react";
-import "./App.css";
-import MapView from "./Map/MapView";
-import type { MapContainerProps } from "react-leaflet";
-import L, { LatLng } from "leaflet";
-import { DataService, getStartinglocation } from "./DataService";
-import Progress from "./Progress/Progress";
-import { ZOOM_LEVELS } from "./Map/ZoomLevel";
+import { useState } from 'react';
+import './App.css';
+import MapView from './Map/MapView';
+import type { MapContainerProps } from 'react-leaflet';
+import L, { LatLng } from 'leaflet';
+import { DataService, getStartinglocation } from './DataService';
+import Progress from './Progress/Progress';
+import { ZOOM_LEVELS } from './Map/ZoomLevel';
 
 function App() {
   const [guesses, setGuesses] = useState<LatLng[]>([]);
-  const [currentGuessLocation, setCurrentGuessLocation] = useState<
-    LatLng | undefined
-  >();
+  const [currentGuessLocation, setCurrentGuessLocation] = useState<LatLng | undefined>();
 
   const [startingLocale] = useState(getStartinglocation());
 
@@ -20,7 +18,7 @@ function App() {
     lng: startingLocale.lng,
   };
 
-  const boundFactor = ZOOM_LEVELS[guesses.length].boundsFactor * 2;
+  const boundFactor = ZOOM_LEVELS[guesses.length].boundsFactor * 4;
 
   const historicalMapContainerProps: MapContainerProps = {
     center: origin,
@@ -34,6 +32,8 @@ function App() {
       [origin.lat + boundFactor, origin.lng + boundFactor],
       [origin.lat - boundFactor, origin.lng - boundFactor],
     ],
+    maxBoundsViscosity: 1,
+    bounceAtZoomLimits: false,
   };
 
   const osmOrigin = {
@@ -53,13 +53,7 @@ function App() {
 
   return (
     <>
-      <section className='header'>
-        <Progress
-          answerLocation={new LatLng(origin.lat, origin.lng)}
-          guesses={guesses}
-        />
-      </section>
-      <section id='center'>
+      <section id="center">
         <MapView
           key={guesses.length}
           mapContainerProps={historicalMapContainerProps}
@@ -68,28 +62,28 @@ function App() {
           isCustomMarkerEnabled={false}
           fixedMarker={new L.LatLng(origin.lat, origin.lng)}
         ></MapView>
+        <section id="progress">
+          <Progress answerLocation={new LatLng(origin.lat, origin.lng)} guesses={guesses} />
+          <button
+            title="Submit"
+            disabled={isSubmitDisabled()}
+            onClick={() => {
+              if (currentGuessLocation) {
+                setGuesses((guesses) => guesses.concat(currentGuessLocation));
+              }
+            }}
+          >
+            Submit
+          </button>
+        </section>
         <MapView
           mapContainerProps={osmMapContainerProps}
           tileLayer={DataService.osmTileLayer}
           attribution={DataService.osmAttribution}
           isCustomMarkerEnabled={true}
           existingMarkers={guesses}
-          setCurrentMarkerLocation={(location) =>
-            setCurrentGuessLocation(location)
-          }
+          setCurrentMarkerLocation={(location) => setCurrentGuessLocation(location)}
         ></MapView>
-        <button
-          title='Submit'
-          disabled={isSubmitDisabled()}
-          onClick={() => {
-            if (currentGuessLocation) {
-              setGuesses((guesses) => guesses.concat(currentGuessLocation));
-            }
-          }}
-        >
-          {" "}
-          Submit{" "}
-        </button>
       </section>
     </>
   );
