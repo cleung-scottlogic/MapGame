@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Elms+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -15,6 +17,8 @@
   --mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
+  font-family: 'Elms Sans', sans-serif;
+  font-optical-sizing: auto;
   letter-spacing: 0.18px;
   color-scheme: light dark;
   color: var(--text);
@@ -49,7 +53,7 @@
 }
 
 #root {
-  width: 1126px;
+  width: 90%;
   max-width: 100%;
   margin: 0 auto;
   text-align: center;

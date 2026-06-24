@@ -1,4 +1,5 @@
 import type { LatLng } from 'leaflet';
+import type { JSX } from 'react/jsx-runtime';
 
 interface ProgressProps {
   answerLocation: LatLng;
@@ -10,27 +11,47 @@ function Progress(props: ProgressProps) {
     return guess ? guess.distanceTo(props.answerLocation) / 1000 : void 0;
   };
 
-  const getGuessHistory = () => {
-    if (props.guesses.length == 0) return null;
+  const getGuess = (i: number): JSX.Element | null => {
+    if (i > props.guesses.length - 1) return null;
 
     return (
-      <ul>
-        {props.guesses.map((g, i) => (
-          <li className="guessEntry" key={i}>
-            Last guess was {getDistanceToAnswer(g)?.toFixed(2)} Km away{' '}
-          </li>
-        ))}
-      </ul>
+      <>
+        <span className="guess">{getDistanceToAnswer(props.guesses[i])?.toFixed(2)} km away</span>
+      </>
     );
+  };
+
+  const getContent = (i: number): JSX.Element | null => {
+    if (i > props.guesses.length - 1) {
+      return <span className="magnifyingGlass">&#128270;</span>;
+    } else {
+      return <>{getGuess(i)}</>;
+    }
+  };
+
+  const getGuessPlaceholder = () => {
+    let placeholders: JSX.Element[] = [];
+
+    for (let i = 0; i < 5; i++) {
+      placeholders = placeholders.concat(
+        <div className="placeholder">
+          {/* <span className='magnifyingGlass'>&#128270;</span> */}
+          <div className="rectangle">{getContent(i)}</div>
+        </div>,
+      );
+    }
+
+    return <>{placeholders}</>;
   };
 
   return (
     <>
-      <span>Guesses remaining = {5 - (props.guesses.length ?? 0)}</span>
-      <div>
+      {/* <span>Guesses remaining = {5 - (props.guesses.length ?? 0)}</span> */}
+      {getGuessPlaceholder()}
+      {/* <div>
         guess history:
         {getGuessHistory()}
-      </div>
+      </div> */}
     </>
   );
 }
