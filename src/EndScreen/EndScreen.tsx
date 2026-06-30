@@ -2,18 +2,14 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import './EndScreen.css';
 import { type MapContainerProps } from 'react-leaflet';
+import type { LatLng } from 'leaflet';
 import { DataService } from '../DataService';
 
 import MapView from '../Map/MapView';
 
-function EndScreen({ open }: { open: boolean }) {
-  const osmOrigin = {
-    lat: 54.970924,
-    lng: -2.457155,
-  };
-
+function EndScreen({ open, startingMarker }: { open: boolean; startingMarker?: LatLng }) {
   const osmMapContainerProps: MapContainerProps = {
-    center: osmOrigin,
+    center: startingMarker,
     zoomControl: true,
     zoom: 7,
   };
@@ -27,6 +23,7 @@ function EndScreen({ open }: { open: boolean }) {
             mapContainerProps={osmMapContainerProps}
             tileLayer={DataService.osmTileLayer}
             attribution={DataService.osmAttribution}
+            fixedMarker={startingMarker}
           />
         </div>
       </Dialog>
