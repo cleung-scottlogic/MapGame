@@ -6,6 +6,7 @@ import L, { LatLng } from 'leaflet';
 import { DataService, getStartinglocation } from './DataService';
 import Progress from './Progress/Progress';
 import { ZOOM_LEVELS } from './Map/ZoomLevel';
+import EndScreen from './EndScreen/EndScreen';
 
 function App() {
   const [guesses, setGuesses] = useState<LatLng[]>([]);
@@ -84,6 +85,7 @@ function App() {
           existingMarkers={guesses}
           setCurrentMarkerLocation={(location) => setCurrentGuessLocation(location)}
         ></MapView>
+        <EndScreen open={true}></EndScreen>
       </section>
     </>
   );

@@ -1,0 +1,37 @@
+/* Center the dialog paper and size it to ~80% of the viewport */
+.end-screen .MuiDialog-paper {
+  width: 80vw;
+  height: 80vh;
+  max-width: none; /* override MUI maxWidth */
+  margin: 0;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  background: #16171d;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  z-index: 1300;
+}
+
+/* Content area inside the dialog; map will fill this */
+.end-screen-content {
+  padding: 16px; /* give some breathing room on all sides */
+  width: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  box-sizing: border-box;
+}
+
+/* Ensure the leaflet map fills its wrapper and respects padding */
+.end-screen-content .leaflet-container {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 6px; /* avoid tiles touching the paper edge */
+}
