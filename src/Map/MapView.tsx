@@ -1,8 +1,14 @@
-import { MapContainer, Marker, TileLayer, useMap, type MapContainerProps } from 'react-leaflet';
-import './MapView.css';
-import LocationMarker from './LocationMarker';
-import type { LatLng } from 'leaflet';
-import { useEffect } from 'react';
+import {
+  MapContainer,
+  Marker,
+  TileLayer,
+  useMap,
+  type MapContainerProps,
+} from "react-leaflet";
+import "./MapView.css";
+import LocationMarker from "./LocationMarker";
+import type { LatLng } from "leaflet";
+import { useEffect } from "react";
 
 interface MapProps {
   tileLayer: string;
@@ -37,24 +43,30 @@ function MapController({
     try {
       map.invalidateSize();
     } catch (e) {
-      console.log('MapController: map.invalidateSize() failed', e);
+      console.log("MapController: map.invalidateSize() failed", e);
       // ignore
     }
 
     if (!autoFly) return;
 
-    if (typeof zoom !== 'undefined') {
+    if (typeof zoom !== "undefined") {
       try {
         map.flyTo([fixedMarker.lat, fixedMarker.lng], zoom);
       } catch (e) {
-        console.log('MapController: map.flyTo() failed, falling back to setView()', e);
+        console.log(
+          "MapController: map.flyTo() failed, falling back to setView()",
+          e,
+        );
         map.setView([fixedMarker.lat, fixedMarker.lng], zoom);
       }
     } else {
       try {
         map.panTo([fixedMarker.lat, fixedMarker.lng]);
       } catch (e) {
-        console.log('MapController: map.panTo() failed, falling back to setView()', e);
+        console.log(
+          "MapController: map.panTo() failed, falling back to setView()",
+          e,
+        );
         map.setView([fixedMarker.lat, fixedMarker.lng], map.getZoom());
       }
     }
@@ -68,7 +80,6 @@ function MapView(props: MapProps) {
     <>
       <MapContainer {...props.mapContainerProps}>
         <TileLayer attribution={props.attribution} url={props.tileLayer} />
-        {props.fixedMarker ? <Marker position={props.fixedMarker} /> : null}
         {props.fixedMarker ? (
           <MapController
             fixedMarker={props.fixedMarker}
@@ -76,11 +87,13 @@ function MapView(props: MapProps) {
             autoFly={props.autoFlyToFixedMarker}
           />
         ) : null}
-        {props.isCustomMarkerEnabled || props.existingMarkers ? (
+        {props.fixedMarker || props.isCustomMarkerEnabled || props.existingMarkers?.length ? (
           <LocationMarker
             setCurrentLocation={props.setCurrentMarkerLocation || (() => {})}
             existingLocations={props.existingMarkers}
             closestLocation={props.closestMarker}
+            correctLocation={props.fixedMarker}
+            isInteractive={props.isCustomMarkerEnabled}
           />
         ) : null}
       </MapContainer>
