@@ -1,5 +1,6 @@
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
+import { useState } from 'react';
 import './EndScreen.css';
 import { type MapContainerProps } from 'react-leaflet';
 import type { LatLng } from 'leaflet';
@@ -19,6 +20,8 @@ function EndScreen({
   startingMarker?: LatLng;
   guesses?: LatLng[];
 }) {
+  const [copied, setCopied] = useState(false);
+
   const osmMapContainerProps: MapContainerProps = {
     center: startingMarker,
     zoomControl: true,
@@ -43,6 +46,71 @@ function EndScreen({
   };
 
   const closestGuess = getClosestGuess();
+
+  const getTotalScore = (): number => {
+    if (!guesses) return 0;
+    return guesses.reduce((total, g) => total + (getScoreForGuess(g, startingMarker) ?? 0), 0);
+  };
+
+  const getScoreEmoji = (score: number): string => {
+    if (score >= 1000) return '✅';
+    if (score >= 800) return '🟩';
+    if (score >= 500) return '🟨';
+    if (score >= 200) return '🟧';
+    return '🟥';
+  };
+
+  const buildShareText = (): string => {
+    const totalScore = getTotalScore();
+    const lines = [`MapGame — ${totalScore} pts`];
+
+    if (guesses && guesses.length > 0) {
+      const emojiRow = guesses
+        .map((g) => getScoreEmoji(getScoreForGuess(g, startingMarker) ?? 0))
+        .join('');
+      lines.push(emojiRow);
+      lines.push('');
+
+      guesses.forEach((g, i) => {
+        const km = getDistanceKm(g, startingMarker);
+        const score = getScoreForGuess(g, startingMarker);
+        const distLabel = km === undefined ? '-' : `${km.toFixed(2)} km`;
+        const scoreLabel = score !== undefined ? `${score} pts` : '';
+        const emoji = getScoreEmoji(score ?? 0);
+        lines.push(`${emoji} Guess ${i + 1}: ${distLabel} - ${scoreLabel}`);
+      });
+    } else {
+      lines.push('No guesses were made.');
+    }
+
+    return lines.join('\n');
+  };
+
+  const handleShare = async () => {
+    const text = buildShareText();
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      console.log('handleShare: clipboard write failed, falling back', e);
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (fallbackError) {
+        console.log('handleShare: fallback copy failed', fallbackError);
+      } finally {
+        document.body.removeChild(textarea);
+      }
+    }
+  };
 
   const renderGuessList = () => {
     if (!guesses || guesses.length === 0) return <p>No guesses were made.</p>;
@@ -90,6 +158,9 @@ function EndScreen({
           <aside className="end-screen-summary">
             <h3>Guesses Summary</h3>
             {guessListElement}
+            <button className="share-button" onClick={handleShare}>
+              {copied ? 'Copied!' : 'Share Results'}
+            </button>
           </aside>
         </div>
       </Dialog>

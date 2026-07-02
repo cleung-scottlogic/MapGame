@@ -102,3 +102,19 @@
   margin-left: -8px;
   border-radius: 2px;
 }
+
+.share-button {
+  margin-top: 16px;
+  width: 100%;
+  padding: 8px 12px;
+  background-color: #9d00ff;
+  color: #ded8c2;
+  border: 1px solid #6b6375;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.share-button:hover {
+  background-color: #8400d6;
+}
