@@ -10,10 +10,12 @@ import MapView from '../Map/MapView';
 
 function EndScreen({
   open,
+  onClose,
   startingMarker,
   guesses,
 }: {
   open: boolean;
+  onClose?: () => void;
   startingMarker?: LatLng;
   guesses?: LatLng[];
 }) {
@@ -66,7 +68,10 @@ function EndScreen({
 
   return (
     <>
-      <Dialog className="end-screen" open={open}>
+      <Dialog className="end-screen" open={open} onClose={onClose}>
+        <button className="end-screen-close" aria-label="close" onClick={onClose}>
+          &times;
+        </button>
         <DialogTitle className="title">Game Over</DialogTitle>
         <div className="end-screen-content">
           <div className="end-screen-map">
